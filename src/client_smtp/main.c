@@ -29,6 +29,7 @@
 #include <arpa/inet.h>
 #include <unistd.h>
 #include <string.h>
+#include <getopt.h>
 
 #define REQUEST_MSG_SIZE 1024
 #define REPLY_MSG_SIZE 500
@@ -36,35 +37,93 @@
 
 int email(char *server_address, char *email_destinatari, char *email_remitent, char *tema_email, char *text_email);
 
-/************************
- *
- *
- * tcpClient
- *
- *
- */
+void print_usage() {
+	printf("Usage: --servidor correuss.euss.cat --origen alumne@euss.cat --desti professor@euss.cat --tema “tema del mail” --fitxer /home/pi/text_email.txt");
+}
+
 
 int main(int argc, char *argv[])
 {
+    const unsigned MAX_LENGTH = 256;
+    //char texto [MAX_LENGTH][MAX_LENGTH];
+    char IP[MAX_LENGTH];
+    char Emisor[MAX_LENGTH];
+    char Destinatario[MAX_LENGTH];
+    char Temita[MAX_LENGTH];
+    char cuerpo[MAX_LENGTH];
+	char filename[MAX_LENGTH];
+	int long_index =0;
+	
+	int opt=0;
+	
+    
+    static struct option long_options[]= {
+		{"servidor", required_argument, 0, 's'},
+		{"origen", required_argument, 0, 'o'},
+		{"desti", required_argument, 0, 'd'},
+		{"tema", required_argument, 0, 't'},
+		{"texte", required_argument, 0, 'x'}	
+	};
+	
+	
+	while ((opt = getopt_long(argc, argv,"t:s:o:d:x:",long_options, &long_index )) != -1) {
+		switch (opt) {
+			case 't' : 
+			strcpy(Temita, optarg);
+			break;
+			case 's' :
+			strcpy(IP, optarg);
+			break;
+			case 'o' :
+			strcpy(Emisor, optarg);
+			break;
+			case 'd' :
+			strcpy(Destinatario, optarg);
+			break;
+			case 'x' :
+			strcpy(filename, optarg);
+			break;
+			default: print_usage();
+			exit(EXIT_FAILURE);
+		}
+	}
 
-    char IP[] = "172.20.0.21";
-    char Emisor[] = "1632442@campus.euss.org";
-    char Destinatario[] = "1598023@campus.euss.org";
-    char Temita[] = "Lo logramos";
-    char Texto[] = "La Concha de la lora , te recuerdo que me has de enviar un Bizum de 5 euros";
+    memset(cuerpo, 0, 256);
 
-    email(IP, Destinatario, Emisor, Temita, Texto);
+    
+    FILE *fp = fopen(filename, "r");
+
+    if (fp == NULL)
+    {
+        printf("Error: could not open file %s", filename);
+        return 1;
+    }
+
+    // reading line by line, max 256 bytes
+ 
+    char Leido[MAX_LENGTH];
+
+   while (fgets(Leido, MAX_LENGTH, fp))
+    {
+     strcat(cuerpo,Leido);
+    }
+
+
+    // close the file
+    fclose(fp);
+
+    email(IP, Destinatario, Emisor, Temita, cuerpo);
 
     return 0;
 }
 
-int email(char *server_address, char *email_destinatari, char *email_remitent, char *tema_email, char *text_email)
+int email(char *server_address, char *email_destinatari, char *email_remitent, char *tema_email, char *text_email) 
 {
 
     struct sockaddr_in serverAddr;
     int sockAddrSize;
     int sFd;
-    int mlen;
+    //int mlen;
     int result;
     char buffer[256];
     char missatge[] = "#1";
@@ -94,7 +153,7 @@ int email(char *server_address, char *email_destinatari, char *email_remitent, c
     /*Enviar*/
 
     strcpy(buffer, missatge); // Copiar missatge a buffer
-    printf("%s\n",buffer);
+    printf("%s\n", buffer);
     result = write(sFd, buffer, strlen(buffer));
     printf("Missatge enviat a servidor(bytes %d): %s\n", result, missatge);
 
@@ -107,7 +166,7 @@ int email(char *server_address, char *email_destinatari, char *email_remitent, c
 
     /*Enviar*/
     strcpy(buffer, missatge1); // Copiar missatge a buffer
-    printf("%s\n",buffer);
+    printf("%s\n", buffer);
     result = write(sFd, buffer, strlen(buffer));
     memset(buffer, 0, 256);
 
@@ -121,7 +180,7 @@ int email(char *server_address, char *email_destinatari, char *email_remitent, c
     /*Enviar*/
 
     sprintf(buffer, " MAIL FROM: %s\n ", email_remitent);
-    printf("%s\n",buffer);
+    printf("%s\n", buffer);
     result = write(sFd, buffer, strlen(buffer));
     memset(buffer, 0, 256);
 
@@ -135,7 +194,7 @@ int email(char *server_address, char *email_destinatari, char *email_remitent, c
     /*Enviar*/
 
     sprintf(buffer, " RCPT TO:  %s\n ", email_destinatari);
-    printf("%s\n",buffer);
+    printf("%s\n", buffer);
     result = write(sFd, buffer, strlen(buffer));
     memset(buffer, 0, 256);
 
@@ -148,12 +207,11 @@ int email(char *server_address, char *email_destinatari, char *email_remitent, c
 
     /*Enviar*/
     strcpy(buffer, missatge6); // Copiar missatge a buffer
-    printf("%s\n",buffer);
+    printf("%s\n", buffer);
     result = write(sFd, buffer, strlen(buffer));
     memset(buffer, 0, 256);
 
-
-     /*Rebre*/
+    /*Rebre*/
     result = read(sFd, buffer, 256); // 250 Ok
     printf(" %s\n", buffer);
     memset(buffer, 0, 256);
@@ -161,7 +219,7 @@ int email(char *server_address, char *email_destinatari, char *email_remitent, c
     /*Enviar*/
 
     sprintf(buffer, " Subject: %s\n ", tema_email);
-    printf("%s\n",buffer);
+    printf("%s\n", buffer);
     result = write(sFd, buffer, strlen(buffer));
     memset(buffer, 0, 256);
 
@@ -170,7 +228,7 @@ int email(char *server_address, char *email_destinatari, char *email_remitent, c
     /*Enviar*/
 
     sprintf(buffer, " From: %s\n ", email_remitent);
-    printf("%s\n",buffer);
+    printf("%s\n", buffer);
     result = write(sFd, buffer, strlen(buffer));
     memset(buffer, 0, 256);
 
@@ -179,15 +237,14 @@ int email(char *server_address, char *email_destinatari, char *email_remitent, c
     /*Enviar*/
 
     sprintf(buffer, " To: %s\n", email_destinatari);
-    printf("%s\n",buffer);
+    printf("%s\n", buffer);
     result = write(sFd, buffer, strlen(buffer));
     memset(buffer, 0, 256);
 
-
     //////////////////////////////////////////////////////////////////////
 
-    sprintf(buffer,"%s\n.\n", text_email);
-    printf("%s\n",buffer);
+    sprintf(buffer, "%s\n.\n", text_email);
+    printf("%s\n", buffer);
     result = write(sFd, buffer, strlen(buffer));
     memset(buffer, 0, 256);
 
@@ -197,4 +254,5 @@ int email(char *server_address, char *email_destinatari, char *email_remitent, c
 
     /*Tancar el socket*/
     close(sFd);
+    
 }
