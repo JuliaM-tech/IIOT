@@ -126,11 +126,15 @@ int email(char *server_address, char *email_destinatari, char *email_remitent, c
     //int mlen;
     int result;
     char buffer[256];
-    char missatge[] = "#1";
-    char missatge1[] = " HELO host\n "; // No em convenç aquesta solució, es podria fer per estructura
-    char missatge6[] = " DATA \n";
-    // char        missatge9 [] = " Hola Salvador\n.\n";
-
+	char		obertura[256] = "HELO host\n";
+	char		pas2[256]="MAIL FROM: ";
+	char		pas3[256]="RCPT TO: ";
+	char		DATA[256]="DATA\n";
+	char		Subject[256] = "Subject: "; 
+	char		From[256] = "From: "; 
+	char		To[256] = "To: "; 
+	char        Intro[]="\n";
+	char        IntroF[]="\n.\n";
     /*Crear el socket*/
     sFd = socket(AF_INET, SOCK_STREAM, 0);
 
@@ -150,107 +154,111 @@ int email(char *server_address, char *email_destinatari, char *email_remitent, c
     }
     printf("\nConnexió establerta amb el servidor: adreça %s, port %d\n", inet_ntoa(serverAddr.sin_addr), ntohs(serverAddr.sin_port));
 
-    /*Enviar*/
+  
+   /*Rebre*/
+	result = read(sFd, buffer, 256);
+	printf("Servidor(bytes %d): %s\n", result, buffer);
+	
+	memset(buffer,0,256);
+	//////////////////////////////////////////////
+	
+	/*Enviar*/
+	
+	strcpy(buffer,obertura); //Copiar obertura a buffer
+	result = write(sFd, buffer, strlen(buffer));
+	printf("Client(bytes %d): %s\n", result, obertura);
 
-    strcpy(buffer, missatge); // Copiar missatge a buffer
-    printf("%s\n", buffer);
-    result = write(sFd, buffer, strlen(buffer));
-    printf("Missatge enviat a servidor(bytes %d): %s\n", result, missatge);
+	memset(buffer,0,256);
+	
+	/*Rebre*/
+	result = read(sFd, buffer, 256);
+	printf("Servidor(bytes %d): %s\n",	result, buffer);
+	
+	memset(buffer,0,256);
+	
+	/*Enviar*/
+	strcat(pas2, email_remitent);
+	strcat(pas2, Intro);
+	strcpy(buffer,pas2); //Copiar missatge a buffer
+	result = write(sFd, buffer, strlen(buffer));
+	printf("Client(bytes %d): %s\n",	result, pas2);
 
-    /*Rebre*/
-    result = read(sFd, buffer, 256);
-    printf(" %s\n", buffer);
-    memset(buffer, 0, 256);
+	memset(buffer,0,256);
+	
+	/*Rebre*/
+	result = read(sFd, buffer, 256);
+	printf("Servidor(bytes %d): %s\n",	result, buffer);
+	
+	memset(buffer,0,256);
+	
+	/*Enviar*/
+	strcat(pas3, email_destinatari);
+	strcat(pas3, Intro);
+	strcpy(buffer,pas3); //Copiar missatge a buffer
+	result = write(sFd, buffer, strlen(buffer));
+	printf("Client(bytes %d): %s\n",	result, pas3);
 
-    //////////////////////////////////////////////////////////////////////
+	memset(buffer,0,256);
+	
+	/*Rebre*/
+	result = read(sFd, buffer, 256);
+	printf("Servidor(bytes %d): %s\n",	result, buffer);
+	
+	memset(buffer,0,256);
+	
+	/*Enviar*/
+	strcpy(buffer,DATA); //Copiar missatge a buffer
+	result = write(sFd, buffer, strlen(buffer));
+	printf("Client(bytes %d): %s\n",	result, DATA);
 
-    /*Enviar*/
-    strcpy(buffer, missatge1); // Copiar missatge a buffer
-    printf("%s\n", buffer);
-    result = write(sFd, buffer, strlen(buffer));
-    memset(buffer, 0, 256);
+	memset(buffer,0,256);
+	
+	/*Rebre*/
+	result = read(sFd, buffer, 256);
+	printf("Servidor(bytes %d): %s\n",	result, buffer);
+	
+	memset(buffer,0,256);
+	
+	/*Enviar*/
+	strcat(Subject, tema_email);
+	strcat(Subject, Intro);
+	strcpy(buffer,Subject); //Copiar missatge a buffer
+	result = write(sFd, buffer, strlen(buffer));
+	printf("Client(bytes %d): %s\n",	result, Subject);
 
-    /*Rebre*/
-    result = read(sFd, buffer, 256);
-    printf(" %s\n", buffer);
-    memset(buffer, 0, 256);
+	memset(buffer,0,256);
+	
+	/*Enviar*/
+	strcat(From, email_remitent);
+	strcat(From, Intro);
+	strcpy(buffer,From); //Copiar missatge a buffer
+	result = write(sFd, buffer, strlen(buffer));
+	printf("Client(bytes %d): %s\n",	result, From);
 
-    //////////////////////////////////////////////////////////////////////
+	memset(buffer,0,256);
+	
+	/*Enviar*/
+	strcat(To, email_destinatari);
+	strcat(To, Intro);
+	strcat(To, Intro);	
+	strcpy(buffer,To); //Copiar missatge a buffer
+	result = write(sFd, buffer, strlen(buffer));
+	printf("Client(bytes %d): %s\n",	result, To);
 
-    /*Enviar*/
+	memset(buffer,0,256);
+	
+	/*Enviar*/
+	strcat(text_email, IntroF);
+	strcpy(buffer,text_email); //Copiar missatge a buffer
+	result = write(sFd, buffer, strlen(buffer));
+	printf("Client(bytes %d): %s\n",	result, text_email);
 
-    sprintf(buffer, " MAIL FROM: %s\n ", email_remitent);
-    printf("%s\n", buffer);
-    result = write(sFd, buffer, strlen(buffer));
-    memset(buffer, 0, 256);
+	memset(buffer,0,256);
 
-    /*Rebre*/
-    result = read(sFd, buffer, 256); // 250 Ok
-    printf(" %s\n", buffer);
-    memset(buffer, 0, 256);
+	/*Tancar el socket*/
+	close(sFd);
 
-    //////////////////////////////////////////////////////////////////////
-
-    /*Enviar*/
-
-    sprintf(buffer, " RCPT TO:  %s\n ", email_destinatari);
-    printf("%s\n", buffer);
-    result = write(sFd, buffer, strlen(buffer));
-    memset(buffer, 0, 256);
-
-    /*Rebre*/
-    result = read(sFd, buffer, 256); // 250 Ok
-    printf(" %s\n", buffer);
-    memset(buffer, 0, 256);
-
-    //////////////////////////////////////////////////////////////////////
-
-    /*Enviar*/
-    strcpy(buffer, missatge6); // Copiar missatge a buffer
-    printf("%s\n", buffer);
-    result = write(sFd, buffer, strlen(buffer));
-    memset(buffer, 0, 256);
-
-    /*Rebre*/
-    result = read(sFd, buffer, 256); // 250 Ok
-    printf(" %s\n", buffer);
-    memset(buffer, 0, 256);
-
-    /*Enviar*/
-
-    sprintf(buffer, " Subject: %s\n ", tema_email);
-    printf("%s\n", buffer);
-    result = write(sFd, buffer, strlen(buffer));
-    memset(buffer, 0, 256);
-
-    //////////////////////////////////////////////////////////////////////
-
-    /*Enviar*/
-
-    sprintf(buffer, " From: %s\n ", email_remitent);
-    printf("%s\n", buffer);
-    result = write(sFd, buffer, strlen(buffer));
-    memset(buffer, 0, 256);
-
-    //////////////////////////////////////////////////////////////////////
-
-    /*Enviar*/
-
-    sprintf(buffer, " To: %s\n", email_destinatari);
-    printf("%s\n", buffer);
-    result = write(sFd, buffer, strlen(buffer));
-    memset(buffer, 0, 256);
-
-    //////////////////////////////////////////////////////////////////////
-
-    sprintf(buffer, "%s\n.\n", text_email);
-    printf("%s\n", buffer);
-    result = write(sFd, buffer, strlen(buffer));
-    memset(buffer, 0, 256);
-
-    /*Rebre*/
-    result = read(sFd, buffer, 256); // 250 Ok
-    printf(" %s\n", buffer);
+	return 0;
 
     /*Tancar el socket*/
     close(sFd);
