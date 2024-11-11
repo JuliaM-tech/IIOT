@@ -1,0 +1,5 @@
+Maxim valor: 110
+Minim valor: 101
+Average valor: 105.5
+Maxim temps: 2020-10-26 19:42:06
+Minim temps: 2020-10-26 19:41:44
