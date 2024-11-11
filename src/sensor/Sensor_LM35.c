@@ -47,61 +47,61 @@ static void pabort(const char *s)
 
 // -----------------------------------------------------------------------------------------------
 
-static void spiadc_config_tx( int conf, uint8_t tx[3] )
+static void spiadc_config_tx(int conf, uint8_t tx[3])
 {
 	int i;
 
 	uint8_t tx_dac[3] = { 0x00, 0x00, 0x00 };
 	uint8_t n_tx_dac = 3;
-	
-	for (i=0; i < n_tx_dac; i++) {
+
+	for (i = 0; i < n_tx_dac; i++) {
 		tx[i] = tx_dac[i];
 	}
-	
+
 // Estableix el mode de comunicació en la parta alta del 2n byte
-	tx[1]=conf<<4;
-	
-	if( verbose ) {
-		for (i=0; i < n_tx_dac; i++) {
+	tx[1] = conf<<4;
+
+	if (verbose) {
+		for (i = 0; i < n_tx_dac; i++) {
 			//printf("spi tx dac byte:(%02d)=0x%02x\n",i,tx[i] );
 		}
 	}
-		
+
 }
 
 // -----------------------------------------------------------------------------------------------
 
 
-static int spiadc_transfer(int fd, uint8_t bits, uint32_t speed, uint16_t delay, uint8_t tx[3], uint8_t *rx, int len )
+static int spiadc_transfer(int fd, uint8_t bits, uint32_t speed, uint16_t delay, uint8_t tx[3], uint8_t *rx, int len)
 {
     int ret;
 
     struct spi_ioc_transfer tr = {
-        .tx_buf = (unsigned long)tx,
-        .rx_buf = (unsigned long)rx,
-        .len = len * sizeof(uint8_t),
-        .delay_usecs = delay,
-        .speed_hz = speed,
-        .bits_per_word = bits,
+	.tx_buf = (unsigned long)tx,
+	.rx_buf = (unsigned long)rx,
+	.len = len * sizeof(uint8_t),
+	.delay_usecs = delay,
+	.speed_hz = speed,
+	.bits_per_word = bits,
     };
 
     ret = ioctl(fd, SPI_IOC_MESSAGE(1), &tr);
-    
-    	 
+
+
       return ret;
 }
 
-  
+
 
 // -----------------------------------------------------------------------------------------------
 
-static int spiadc_config_transfer( int conf, int *value )
+static int spiadc_config_transfer(int conf, int *value)
 {
 	int ret = 0;
 	int fd;
 	uint8_t rx[2];
 	char buffer[255];
-	
+
 	/* SPI parameters */
 	char *device = cntdevice;
 	//uint8_t mode = SPI_CPOL; //No va bé amb aquesta configuació, ha de ser CPHA
@@ -109,18 +109,18 @@ static int spiadc_config_transfer( int conf, int *value )
 	uint8_t bits = 8;
 	uint32_t speed = 500000; //max 1500KHz
 	uint16_t delay = 0;
-	
+
 	/* Transmission buffer */
 	uint8_t tx[3];
 
 	/* open device */
 	fd = open(device, O_RDWR);
 	if (fd < 0) {
-		sprintf( buffer, "can't open device (%s)", device );
-		pabort( buffer );
+		sprintf(buffer, "can't open device (%s)", device);
+		pabort(buffer);
 	}
 
-	/* spi mode 	 */
+	/* spi mode	 */
 	ret = ioctl(fd, SPI_IOC_WR_MODE, &mode);
 	if (ret == -1)
 		pabort("can't set spi mode");
@@ -129,7 +129,7 @@ static int spiadc_config_transfer( int conf, int *value )
 	if (ret == -1)
 		pabort("can't get spi mode");
 
-	/* bits per word 	 */
+	/* bits per word	 */
 	ret = ioctl(fd, SPI_IOC_WR_BITS_PER_WORD, &bits);
 	if (ret == -1)
 		pabort("can't set bits per word");
@@ -148,26 +148,26 @@ static int spiadc_config_transfer( int conf, int *value )
 		pabort("can't get max speed hz");
 
 	/* build data to transfer */
-	spiadc_config_tx( conf, tx );
-		
+	spiadc_config_tx(conf, tx);
+
 	/* spi adc transfer */
-	ret = spiadc_transfer( fd, bits, speed, delay, tx, rx, 3 );
+	ret = spiadc_transfer(fd, bits, speed, delay, tx, rx, 3);
 	if (ret == 1)
 		pabort("can't send spi message");
 
 	close(fd);
-	
+
 	//printf("%b %b\n",rx[0], rx[1]);
 	*value = rx[0] << 6 | rx[1] >> 2;
-	printf("%b\n",*value);
+	printf("%b\n", *value);
 
 	return ret;
 }
 //-------------/*timer*/----------------------//
 
-int set_timer(timer_t * timer_id, float delay, float interval, timer_callback * func, void * data) 
+int set_timer(timer_t *timer_id, float delay, float interval, timer_callback *func, void *data)
 {
-    int status =0;
+    int status = 0;
     struct itimerspec ts;
     struct sigevent se;
 
@@ -189,15 +189,15 @@ int set_timer(timer_t * timer_id, float delay, float interval, timer_callback * 
 
 void callback(union sigval si)
 {
-	
+
 	int value_int;
 	float value_volts, temp;
 	int ret = 0;
-	
+
 	ret = spiadc_config_transfer(SINGLE_ENDED_CH2, &value_int);
-	value_volts=3.3*value_int/1023;
-	temp= value_volts*(1/(10*pow(10,-3)));
-	
+	value_volts = 3.3*value_int/1023;
+	temp = value_volts*(1/(10*pow(10, -3)));
+
 	printf("voltatge %.3f V\n", value_volts);
 	printf("Temperatura %.1f C\n", temp);
 	printf("\n");
@@ -211,11 +211,10 @@ int main(int argc, char *argv[])
 {
 
 	timer_t Temperatura;
-	
-	set_timer(&Temperatura, 1, 1, callback, NULL);
-	
-	getchar();
-	
-	
-}
 
+	set_timer(&Temperatura, 1, 1, callback, NULL);
+
+	getchar();
+
+
+}

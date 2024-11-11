@@ -6,26 +6,26 @@
  *
  * Author: Sonny Rao <sonnyrao@us.ibm.com>*/
 
-#ifdef HAVE_CONFIG_H
-#include <config.h>
-#endif
+ #ifdef HAVE_CONFIG_H
+ #include <config.h>
+ #endif
 
-#include <stdio.h>
-#include "email.h"
-#include <stdlib.h>
-#include <sys/types.h>
-#include <sys/socket.h>
-#include <string.h>
-#include <sys/socket.h>
-#include <netinet/in.h>
-#include <arpa/inet.h>
-#include <unistd.h>
-#include <string.h>
-#include <getopt.h>
+ #include <stdio.h>
+ #include "email.h"
+ #include <stdlib.h>
+ #include <sys/types.h>
+ #include <sys/socket.h>
+ #include <string.h>
+ #include <sys/socket.h>
+ #include <netinet/in.h>
+ #include <arpa/inet.h>
+ #include <unistd.h>
+ #include <string.h>
+ #include <getopt.h>
 
-#define REQUEST_MSG_SIZE 1024
-#define REPLY_MSG_SIZE 500
-#define SERVER_PORT_NUM 25
+ #define REQUEST_MSG_SIZE 1024
+ #define REPLY_MSG_SIZE 500
+ #define SERVER_PORT_NUM 25
 
 
 
