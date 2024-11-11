@@ -53,7 +53,7 @@ void main(int argc, char *argv[])
         {"origen", required_argument, 0, 'o'},
         {"desti", required_argument, 0, 'd'},
         {"tema", required_argument, 0, 't'},
-        {"texte", required_argument, 0, 'x'}};
+        {"fitxer", required_argument, 0, 'x'}};
 
     while ((opt = getopt_long(argc, argv, "t:s:o:d:x:", long_options, &long_index)) != -1)
     {
