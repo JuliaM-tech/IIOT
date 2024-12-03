@@ -43,7 +43,7 @@ void main(int argc, char *argv[])
     char Destinatario[MAX_LENGTH];
     char Temita[MAX_LENGTH];
     char cuerpo[MAX_LENGTH];
-    char filename[MAX_LENGTH];
+    char filename[256];
     int long_index = 0;
 
     int opt = 0;

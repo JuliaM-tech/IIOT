@@ -5,32 +5,50 @@ CC = gcc
 CFLAGS = -Wall -fPIC
 
 # Regla por defecto (el objetivo principal)
-all: sensor client_smtp
+all: sensor
 
 build:
 	mkdir build
+	
+#SENSOR
+sensor: build/Sensor
+	./build/Sensor
+	
+build/Sensor: build src/sensor/Sensor.c build/libcloud.a
+	$(CC) -c src/sensor/Sensor.c -o build/Sensor.o -I/home/pi/Desktop/IIOT/src/Cloud  
+	$(CC) -Wall build/Sensor.o -o build/Sensor -L/home/pi/Desktop/IIOT/build -lcloud -lsqlite3 -l gpiod -li2c -lm 
 
-sensor: build src/sensor/Sensor_LM35.c
-	$(CC) src/sensor/Sensor_LM35.c -c -o build/Sensor_LM35.o 
-	$(CC) build/Sensor_LM35.o -o build/Sensor_LM35 
+build/libcloud.a: build src/Cloud/cloud.c
+	$(CC) -c -o build/cloud.o src/Cloud/cloud.c
+	$(AR) rcs build/libcloud.a build/cloud.o
 
+#Client_smtp+email
 # Compilar main.o y enlazar con la biblioteca
-client_smtp: build/main.o build/libemail.so
-	$(CC) src/client_smtp/main.c -Isrc/lib_email/ -Lbuild/ -lemail -o build/client_smtp
+client_smtp: build/client_smtp
 
-# Crear el archivo objeto main.o
-build/main.o: src/client_smtp/main.c src/lib_email/email.h
-	$(CC) $(CFLAGS) -c src/client_smtp/main.c -Isrc/lib_email/ -o build/main.o
+build/client_smtp: build/libemail.so src/client_smtp/main.c
+	$(CC) src/client_smtp/main.c -Isrc/lib_email/ -Lbuild/ -lemail -o build/client_smtp
+    
+#SQLite
+informe: build/informe
+	./build/informe
+
+build/informe: src/SQLite/informe.c build
+	$(CC) src/SQLite/informe.c -o build/informe -lsqlite3 -lm
+	
+
 
 # Crear la biblioteca compartida libemail.so a partir de email.c
 libemail: build/libemail.so
 
 build/libemail.so: build src/lib_email/email.c src/lib_email/email.h
-	$(CC) -Wall -fPIC -shared src/lib_email/email.c -o build/libemail.so 
+	$(CC) -Wall -fPIC -c -o build/libemail.o src/lib_email/email.c  
+	$(CC) -Wall -shared -fPIC -o build/libemail.so build/libemail.o
 
 # Limpiar archivos generados
 clean:
 	rm -rf build
 
-test:
-	LD_LIBRARY_PATH=build/ ./build/client_smtp --servidor 172.20.0.21 --origen 1632442@campus.euss.org --desti 1523276@campus.euss.org --tema "tema del mail" --fitxer build/text_email.txt
+test: build/client_smtp
+	LD_LIBRARY_PATH=build/ ./build/client_smtp --servidor 172.20.0.21 --origen 1632442@campus.euss.org --desti 1523276@campus.euss.org --tema "tema del mail" --fitxer src/SQLite/resum.txt
+

@@ -1,5 +1,9 @@
-Maxim valor: 110
-Minim valor: 101
-Average valor: 105.5
-Maxim temps: 2020-10-26 19:42:06
-Minim temps: 2020-10-26 19:41:44
+Resumen de Temperatura (ID = 101):
+MAX -- Temperatura: 24.516129
+MIN -- Temperatura: 20.0
+AVG -- Temperatura promedio: 21.8679670232558
+
+Resumen de Humedad (ID = 102):
+MAX -- Humedad: 71.43259
+MIN -- Humedad: 45.310593
+AVG -- Humedad promedio: 53.0623834883721
