@@ -14,11 +14,11 @@ build:
 sensor: build/Sensor
 	./build/Sensor
 	
-build/Sensor: build src/sensor/Sensor.c build/libcloud.a
+build/Sensor: build src/sensor/Sensor.c build/libcloud.a src/Cloud/cloud.h
 	$(CC) -c src/sensor/Sensor.c -o build/Sensor.o -I/home/pi/Desktop/IIOT/src/Cloud  
 	$(CC) -Wall build/Sensor.o -o build/Sensor -L/home/pi/Desktop/IIOT/build -lcloud -lsqlite3 -l gpiod -li2c -lm 
 
-build/libcloud.a: build src/Cloud/cloud.c
+build/libcloud.a: build src/Cloud/cloud.c src/Cloud/cloud.h
 	$(CC) -c -o build/cloud.o src/Cloud/cloud.c
 	$(AR) rcs build/libcloud.a build/cloud.o
 
@@ -26,7 +26,7 @@ build/libcloud.a: build src/Cloud/cloud.c
 # Compilar main.o y enlazar con la biblioteca
 client_smtp: build/client_smtp
 
-build/client_smtp: build/libemail.so src/client_smtp/main.c
+build/client_smtp: build/libemail.so src/client_smtp/main.c src/lib_email/email.h
 	$(CC) src/client_smtp/main.c -Isrc/lib_email/ -Lbuild/ -lemail -o build/client_smtp
     
 #SQLite
