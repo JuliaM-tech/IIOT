@@ -74,6 +74,6 @@ void cloud(char *id_sensor, char *valor){
 
 	/*Tancar el socket*/
 	close(sFd);
-
+return(0);
 	}
 
