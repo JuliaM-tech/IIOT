@@ -431,9 +431,11 @@ int main(int argc, char *argv[])
 			
 	timer_t mesures;
 
-	set_timer(&mesures, 1, 1, callback, NULL);
+	set_timer(&mesures, 1, 300, callback, NULL);
 
-	getchar();
+	while(1) {
+	    sleep(3600);
+	}
 	close(fd2);
 	
 
