@@ -1,21 +1,21 @@
 #include <stdint.h>
-#include <unistd.h>
-#include <stdio.h>
-#include <stdlib.h>
-#include <getopt.h>
-#include <fcntl.h>
-#include <sys/ioctl.h>
-#include <linux/types.h>
-#include <linux/spi/spidev.h>
-#include <linux/i2c-dev.h>
-#include <string.h>
-#include <math.h>
-#include <sys/time.h>
-#include <pthread.h>
-#include <signal.h>
-#include "cloud.h"
-#include <sqlite3.h>
-#include <gpiod.h>
+ #include <unistd.h>
+ #include <stdio.h>
+ #include <stdlib.h>
+ #include <getopt.h>
+ #include <fcntl.h>
+ #include <sys/ioctl.h>
+ #include <linux/types.h>
+ #include <linux/spi/spidev.h>
+ #include <linux/i2c-dev.h>
+ #include <string.h>
+ #include <math.h>
+ #include <sys/time.h>
+ #include <pthread.h>
+ #include <signal.h>
+ #include "cloud.h"
+ #include <sqlite3.h>
+ #include <gpiod.h>
 
 
 int verbose = 1;
@@ -30,29 +30,29 @@ static char *cntdevice = "/dev/spidev0.0";
 typedef void (timer_callback) (union sigval);
 
 //ADC configurations segons manual MCP3008
-#define SINGLE_ENDED_CH0 8
-#define SINGLE_ENDED_CH1 9
-#define SINGLE_ENDED_CH2 10
-#define SINGLE_ENDED_CH3 11
-#define SINGLE_ENDED_CH4 12
-#define SINGLE_ENDED_CH5 13
-#define SINGLE_ENDED_CH6 14
-#define SINGLE_ENDED_CH7 15
-#define DIFERENTIAL_CH0_CH1 0 //Chanel CH0 = IN+ CH1 = IN-
-#define DIFERENTIAL_CH1_CH0 1 //Chanel CH0 = IN- CH1 = IN+
-#define DIFERENTIAL_CH2_CH3 2 //Chanel CH2 = IN+ CH3 = IN-
-#define DIFERENTIAL_CH3_CH2 3 //Chanel CH2 = IN- CH3 = IN+
-#define DIFERENTIAL_CH4_CH5 4 //Chanel CH4 = IN+ CH5 = IN-
-#define DIFERENTIAL_CH5_CH4 5 //Chanel CH4 = IN- CH5 = IN+
-#define DIFERENTIAL_CH6_CH7 6 //Chanel CH6 = IN+ CH7 = IN-
-#define DIFERENTIAL_CH7_CH6 7 //Chanel CH6 = IN- CH7 = IN+
+ #define SINGLE_ENDED_CH0 8
+ #define SINGLE_ENDED_CH1 9
+ #define SINGLE_ENDED_CH2 10
+ #define SINGLE_ENDED_CH3 11
+ #define SINGLE_ENDED_CH4 12
+ #define SINGLE_ENDED_CH5 13
+ #define SINGLE_ENDED_CH6 14
+ #define SINGLE_ENDED_CH7 15
+ #define DIFERENTIAL_CH0_CH1 0 //Chanel CH0 = IN+ CH1 = IN-
+ #define DIFERENTIAL_CH1_CH0 1 //Chanel CH0 = IN- CH1 = IN+
+ #define DIFERENTIAL_CH2_CH3 2 //Chanel CH2 = IN+ CH3 = IN-
+ #define DIFERENTIAL_CH3_CH2 3 //Chanel CH2 = IN- CH3 = IN+
+ #define DIFERENTIAL_CH4_CH5 4 //Chanel CH4 = IN+ CH5 = IN-
+ #define DIFERENTIAL_CH5_CH4 5 //Chanel CH4 = IN- CH5 = IN+
+ #define DIFERENTIAL_CH6_CH7 6 //Chanel CH6 = IN+ CH7 = IN-
+ #define DIFERENTIAL_CH7_CH6 7 //Chanel CH6 = IN- CH7 = IN+
 
 
-#define DEV_ID 0x38
-#define DEV_PATH "/dev/i2c-1"
-#define TRIGGER 0xAC3300
-#define STATUS 0x71
-#define RESET 0xBA
+ #define DEV_ID 0x38
+ #define DEV_PATH "/dev/i2c-1"
+ #define TRIGGER 0xAC3300
+ #define STATUS 0x71
+ #define RESET 0xBA
 
 
 
@@ -431,13 +431,10 @@ int main(int argc, char *argv[])
 			
 	timer_t mesures;
 
-	set_timer(&mesures, 1, 300, callback, NULL);
+	set_timer(&mesures, 1, 1, callback, NULL);
 
-	while(1) {
-	    sleep(3600);
-	}
+	getchar();
 	close(fd2);
 	
 
 }
-

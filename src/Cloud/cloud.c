@@ -4,25 +4,25 @@
     email                : afontquerni@euss.cat / sbernadas@euss.cat
  ***************************************************************************/
 
-#ifdef HAVE_CONFIG_H
-#include <config.h>
-#endif
+ #ifdef HAVE_CONFIG_H
+ #include <config.h>
+ #endif
 
-#include <stdio.h>
-#include <stdlib.h>
-#include <sys/types.h>
-#include <sys/socket.h>
-#include <string.h>
-#include <sys/socket.h>
-#include <netinet/in.h>
-#include <arpa/inet.h>
-#include <unistd.h>
-#include <string.h>
-#include "cloud.h"
+ #include <stdio.h>
+ #include <stdlib.h>
+ #include <sys/types.h>
+ #include <sys/socket.h>
+ #include <string.h>
+ #include <sys/socket.h>
+ #include <netinet/in.h>
+ #include <arpa/inet.h>
+ #include <unistd.h>
+ #include <string.h>
+ #include "cloud.h"
 
 
-#define REQUEST_MSG_SIZE	1024*256
-#define SERVER_PORT_NUM		80
+ #define REQUEST_MSG_SIZE	1024*256
+ #define SERVER_PORT_NUM		80
 
 
 
@@ -74,6 +74,5 @@ void cloud(char *id_sensor, char *valor){
 
 	/*Tancar el socket*/
 	close(sFd);
-return(0);
-	}
 
+	}
