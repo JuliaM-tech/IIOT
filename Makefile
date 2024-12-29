@@ -9,14 +9,21 @@ all: sensor
 
 build:
 	mkdir build
+
+mqtt_pub: 
+	gcc mqtt_pub.c -o mqtt_pub -lmosquitto
+
+mqtt_sub: mqtt_sub.c
+	gcc mqtt_sub.c -o mqtt_sub -lmosquitto
+
 	
 #SENSOR
 sensor: build/Sensor
-	./build/Sensor
+	LD_LIBRARY_PATH=/home/pi/Desktop/IIOT/build/ ./build/Sensor
 	
-build/Sensor: build src/sensor/Sensor.c build/libcloud.a src/Cloud/cloud.h
-	$(CC) -c src/sensor/Sensor.c -o build/Sensor.o -I/home/pi/Desktop/IIOT/src/Cloud  
-	$(CC) -Wall build/Sensor.o -o build/Sensor -L/home/pi/Desktop/IIOT/build -lcloud -lsqlite3 -l gpiod -li2c -lm 
+build/Sensor: build src/sensor/Sensor.c build/libcloud.a src/Cloud/cloud.h build/libemail.so src/lib_email/email.h
+	$(CC) -c src/sensor/Sensor.c -o build/Sensor.o -I/home/pi/Desktop/IIOT/src/Cloud -I/home/pi/Desktop/IIOT/src/lib_email/ -Lbuild/ -lemail 
+	$(CC) -Wall build/Sensor.o -o build/Sensor -L/home/pi/Desktop/IIOT/build -lcloud -lsqlite3 -l gpiod -lmosquitto -li2c -lemail -lm
 
 build/libcloud.a: build src/Cloud/cloud.c src/Cloud/cloud.h
 	$(CC) -c -o build/cloud.o src/Cloud/cloud.c
@@ -48,6 +55,7 @@ build/libemail.so: build src/lib_email/email.c src/lib_email/email.h
 # Limpiar archivos generados
 clean:
 	rm -rf build
+
 
 test: build/client_smtp
 	LD_LIBRARY_PATH=build/ ./build/client_smtp --servidor 172.20.0.21 --origen 1632442@campus.euss.org --desti 1523276@campus.euss.org --tema "tema del mail" --fitxer src/SQLite/resum.txt

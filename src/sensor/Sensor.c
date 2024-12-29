@@ -1,4 +1,4 @@
-#include <stdint.h>
+ #include <stdint.h>
  #include <unistd.h>
  #include <stdio.h>
  #include <stdlib.h>
@@ -16,6 +16,7 @@
  #include "cloud.h"
  #include <sqlite3.h>
  #include <gpiod.h>
+ #include <mosquitto.h>
 
 
 int verbose = 1;
@@ -230,6 +231,30 @@ void lm35(float *valor)
     //printf("\n");
 }
 
+int mosquitto_send(sensor,valor){
+	int rc;
+	struct mosquitto *mosq; 
+	
+	mosquitto_lib_init();
+	
+	mosq = mosquitto_new("publisher-test", true, NULL);
+
+	rc = mosquitto_connect(mosq, "localhost", 1883, 60);
+	
+	if (rc!= 0){
+		printf("El client no s'ha pogut connectar! Codi d'error %d\n", rc);
+		mosquitto_destroy(mosq);
+		return-1;
+	}
+	
+	printf ("We are now connected to the broker\n");
+	mosquitto_publish(mosq,NULL, sensor,6, valor, 0, false);
+	mosquitto_disconnect (mosq);
+	mosquitto_destroy(mosq);
+
+	mosquitto_lib_cleanup();
+	return 0;
+}
 
 void i2cINI(void)
 {
@@ -385,6 +410,21 @@ void callback(union sigval si)
 	cloud(id_sensorH, valorH);
 	SQLite( global_bbdd, id_sensorH, hum, asctime(local_time));
 	
+	
+	/*if (temp) //temp>=30 CALENT
+	
+	if (temp) //temp>=30 CALENT
+	*/
+	
+	char intochar [10];  // Asegúrate de que tenga suficiente espacio para el número y el terminador nulo
+	
+	sprintf(intochar, "%.1f", temp);
+	
+	mosquitto_send("temperatura",intochar);
+	
+	sprintf(intochar, "%.3LF", hum);
+	mosquitto_send("humitat",intochar);
+	 
 	led_vermell();
 }
 
