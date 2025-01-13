@@ -5,25 +5,34 @@ CC = gcc
 CFLAGS = -Wall -fPIC
 
 # Regla por defecto (el objetivo principal)
-all: sensor
+all: sensor 
+
+#LD_LIBRARY_PATH =$LD_LIBRARY_PATH:/Desktop/IIOT/src/
 
 build:
 	mkdir build
+	
 
-mqtt_pub: 
+
+mqtt_pub: mqtt_pub.c
 	gcc mqtt_pub.c -o mqtt_pub -lmosquitto
 
 mqtt_sub: mqtt_sub.c
 	gcc mqtt_sub.c -o mqtt_sub -lmosquitto
 
-	
+
 #SENSOR
 sensor: build/Sensor
 	LD_LIBRARY_PATH=/home/pi/Desktop/IIOT/build/ ./build/Sensor
+	LD_LIBRARY_PATH=/home/pi/Desktop/IIOT/build/ ./build/mqtt_sub
 	
-build/Sensor: build src/sensor/Sensor.c build/libcloud.a src/Cloud/cloud.h build/libemail.so src/lib_email/email.h
+build/mqtt_sub: build src/mqtt/mqtt_sub.c build/libemail.so src/lib_email/email.h
+	$(CC) -c src/mqtt/mqtt_sub.c -o build/mqtt_sub.o -I/home/pi/Desktop/IIOT/src/lib_email/ -Lbuild/ -lemail 
+	$(CC) -Wall build/mqtt_sub.o -o build/mqtt_sub -L/home/pi/Desktop/IIOT/build -lmosquitto -lemail -lm
+
+build/Sensor: build src/sensor/Sensor.c build/mqtt_sub build/libcloud.a src/Cloud/cloud.h build/libemail.so src/lib_email/email.h
 	$(CC) -c src/sensor/Sensor.c -o build/Sensor.o -I/home/pi/Desktop/IIOT/src/Cloud -I/home/pi/Desktop/IIOT/src/lib_email/ -Lbuild/ -lemail 
-	$(CC) -Wall build/Sensor.o -o build/Sensor -L/home/pi/Desktop/IIOT/build -lcloud -lsqlite3 -l gpiod -lmosquitto -li2c -lemail -lm
+	$(CC) -Wall build/Sensor.o -o build/Sensor -L/home/pi/Desktop/IIOT/build -lcloud -lsqlite3 -l gpiod -li2c -lmosquitto -lemail -lm
 
 build/libcloud.a: build src/Cloud/cloud.c src/Cloud/cloud.h
 	$(CC) -c -o build/cloud.o src/Cloud/cloud.c
@@ -54,9 +63,8 @@ build/libemail.so: build src/lib_email/email.c src/lib_email/email.h
 
 # Limpiar archivos generados
 clean:
-	rm -rf build
-
+	rm -rf build mqtt_pub mqtt_sub
 
 test: build/client_smtp
-	LD_LIBRARY_PATH=build/ ./build/client_smtp --servidor 172.20.0.21 --origen 1632442@campus.euss.org --desti 1523276@campus.euss.org --tema "tema del mail" --fitxer src/SQLite/resum.txt
+	LD_LIBRARY_PATH=build/ ./build/client_smtp --servidor 172.20.0.21 --origen 1632442@campus.euss.org --desti 1598023@campus.euss.org --tema "tema del mail" --fitxer src/SQLite/resum.txt
 

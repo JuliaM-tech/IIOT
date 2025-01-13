@@ -1,9 +1,19 @@
 Resumen de Temperatura (ID = 101):
-MAX -- Temperatura: 24.516129
-MIN -- Temperatura: 20.0
-AVG -- Temperatura promedio: 21.8679670232558
+MAX -- Temperatura: 26.451614
+MIN -- Temperatura: 20.967741
+AVG -- Temperatura promedio: 23.5730285069445
 
 Resumen de Humedad (ID = 102):
-MAX -- Humedad: 71.43259
-MIN -- Humedad: 45.310593
-AVG -- Humedad promedio: 53.0623834883721
+MAX -- Humedad: 51.861286
+MIN -- Humedad: 42.801571
+AVG -- Humedad promedio: 49.104177048951
+
+Resumen de VOC (ID = 104):
+MAX -- VOC: 658.515259
+MIN -- VOC: 400.0
+AVG -- VOC: 481.811141659575
+
+Resumen de CO2 (ID = 105):
+MAX -- CO2: 222.707428
+MIN -- CO2: 170.305679
+AVG -- CO2: 195.112886815603

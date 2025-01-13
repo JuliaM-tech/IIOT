@@ -4,10 +4,6 @@
 int main(){
 	int rc;
 	struct mosquitto *mosq; 
-	int valor_1 = 10;
-	char v_1 [10];
-	
-	sprintf(v_1, "%d", valor_1);
 	
 	mosquitto_lib_init();
 	
@@ -22,12 +18,10 @@ int main(){
 	}
 	
 	printf ("We are now connected to the broker\n");
-	mosquitto_publish(mosq,NULL, "temperatura",6, v_1, 0, false);
-	mosquitto_publish(mosq,NULL, "humitat",6, v_1, 0, false);
+	mosquitto_publish(mosq,NULL, "test/t1",6, "Hello", 0, false);
 	mosquitto_disconnect (mosq);
 	mosquitto_destroy(mosq);
 
 	mosquitto_lib_cleanup();
 	return 0;
 }
-

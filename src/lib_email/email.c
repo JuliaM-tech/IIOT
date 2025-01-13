@@ -29,7 +29,8 @@
  #define REPLY_MSG_SIZE 500
  #define SERVER_PORT_NUM 25
 
-void email(char *server_address, char *email_destinatari, char *email_remitent, char *tema_email, char *text_email)
+void email(char *server_address, char *email_destinatari, 
+char *email_remitent, char *tema_email, char *text_email)
 {
 
     struct sockaddr_in serverAddr;
@@ -37,16 +38,17 @@ void email(char *server_address, char *email_destinatari, char *email_remitent, 
     int sFd;
     // int mlen;
     int result;
-    char buffer[256];
-    char obertura[256] = "HELO host\n";
-    char pas2[256] = "MAIL FROM: ";
-    char pas3[256] = "RCPT TO: ";
-    char DATA[256] = "DATA\n";
-    char Subject[256] = "Subject: ";
-    char From[256] = "From: ";
-    char To[256] = "To: ";
+    char buffer[5000];
+    char obertura[5000] = "HELO host\n";
+    char pas2[5000] = "MAIL FROM: ";
+    char pas3[5000] = "RCPT TO: ";
+    char DATA[5000] = "DATA\n";
+    char Subject[5000] = "Subject: ";
+    char From[5000] = "From: ";
+    char To[5000] = "To: ";
+    char coss[5000] = "\n ";
     char Intro[] = "\n";
-    char IntroF[] = "\n.\n";
+    //char IntroF[] = "\n.\n";
     /*Crear el socket*/
     sFd = socket(AF_INET, SOCK_STREAM, 0);
 
@@ -67,10 +69,10 @@ void email(char *server_address, char *email_destinatari, char *email_remitent, 
     printf("\nConnexió establerta amb el servidor: adreça %s, port %d\n", inet_ntoa(serverAddr.sin_addr), ntohs(serverAddr.sin_port));
 
     /*Rebre*/
-    result = read(sFd, buffer, 256);
+    result = read(sFd, buffer, 5000);
     printf("Servidor(bytes %d): %s\n", result, buffer);
 
-    memset(buffer, 0, 256);
+    memset(buffer, 0, 5000);
     //////////////////////////////////////////////
 
     /*Enviar*/
@@ -79,13 +81,13 @@ void email(char *server_address, char *email_destinatari, char *email_remitent, 
     result = write(sFd, buffer, strlen(buffer));
     printf("Client(bytes %d): %s\n", result, obertura);
 
-    memset(buffer, 0, 256);
+    memset(buffer, 0, 5000);
 
     /*Rebre*/
-    result = read(sFd, buffer, 256);
+    result = read(sFd, buffer, 5000);
     printf("Servidor(bytes %d): %s\n", result, buffer);
 
-    memset(buffer, 0, 256);
+    memset(buffer, 0, 5000);
 
     /*Enviar*/
     strcat(pas2, email_remitent);
@@ -94,13 +96,13 @@ void email(char *server_address, char *email_destinatari, char *email_remitent, 
     result = write(sFd, buffer, strlen(buffer));
     printf("Client(bytes %d): %s\n", result, pas2);
 
-    memset(buffer, 0, 256);
+    memset(buffer, 0, 5000);
 
     /*Rebre*/
-    result = read(sFd, buffer, 256);
+    result = read(sFd, buffer, 5000);
     printf("Servidor(bytes %d): %s\n", result, buffer);
 
-    memset(buffer, 0, 256);
+    memset(buffer, 0, 5000);
 
     /*Enviar*/
     strcat(pas3, email_destinatari);
@@ -109,26 +111,26 @@ void email(char *server_address, char *email_destinatari, char *email_remitent, 
     result = write(sFd, buffer, strlen(buffer));
     printf("Client(bytes %d): %s\n", result, pas3);
 
-    memset(buffer, 0, 256);
+    memset(buffer, 0, 5000);
 
     /*Rebre*/
-    result = read(sFd, buffer, 256);
+    result = read(sFd, buffer, 5000);
     printf("Servidor(bytes %d): %s\n", result, buffer);
 
-    memset(buffer, 0, 256);
+    memset(buffer, 0, 5000);
 
     /*Enviar*/
     strcpy(buffer, DATA); // Copiar missatge a buffer
     result = write(sFd, buffer, strlen(buffer));
     printf("Client(bytes %d): %s\n", result, DATA);
 
-    memset(buffer, 0, 256);
+    memset(buffer, 0, 5000);
 
     /*Rebre*/
-    result = read(sFd, buffer, 256);
+    result = read(sFd, buffer, 5000);
     printf("Servidor(bytes %d): %s\n", result, buffer);
 
-    memset(buffer, 0, 256);
+    memset(buffer, 0, 5000);
 
     /*Enviar*/
     strcat(Subject, tema_email);
@@ -137,7 +139,7 @@ void email(char *server_address, char *email_destinatari, char *email_remitent, 
     result = write(sFd, buffer, strlen(buffer));
     printf("Client(bytes %d): %s\n", result, Subject);
 
-    memset(buffer, 0, 256);
+    memset(buffer, 0, 5000);
 
     /*Enviar*/
     strcat(From, email_remitent);
@@ -146,25 +148,28 @@ void email(char *server_address, char *email_destinatari, char *email_remitent, 
     result = write(sFd, buffer, strlen(buffer));
     printf("Client(bytes %d): %s\n", result, From);
 
-    memset(buffer, 0, 256);
+    memset(buffer, 0, 5000);
+
 
     /*Enviar*/
     strcat(To, email_destinatari);
     strcat(To, Intro);
-    strcat(To, Intro);
     strcpy(buffer, To); // Copiar missatge a buffer
     result = write(sFd, buffer, strlen(buffer));
     printf("Client(bytes %d): %s\n", result, To);
+    
 
-    memset(buffer, 0, 256);
 
+    memset(buffer, 0, 5000);
+        
     /*Enviar*/
-    strcat(text_email, IntroF);
-    strcpy(buffer, text_email); // Copiar missatge a buffer
+    strcat(coss, text_email);
+    strcat(coss, "\n.\n");
+    strcpy(buffer, coss);
     result = write(sFd, buffer, strlen(buffer));
-    printf("Client(bytes %d): %s\n", result, text_email);
+    printf("Client(bytes %d): %s\n", result, coss);
 
-    memset(buffer, 0, 256);
+    memset(buffer, 0, 5000);
 
     /*Tancar el socket*/
     close(sFd);

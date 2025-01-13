@@ -85,6 +85,48 @@ int main(int argc, char *argv[])
     sql = "SELECT AVG(Valor) FROM Sensor WHERE id = 102;";
     rc = sqlite3_exec(db, sql, callback, &avgResult, &zErrMsg);
     fprintf(fp, "AVG -- Humedad promedio: %s\n", avgResult);
+    
+    
+    
+    
+    fprintf(fp, "\nResumen de VOC (ID = 104):\n");
+
+
+
+
+// Máximo
+sql = "SELECT MAX(Valor) FROM Sensor WHERE id = 104;";
+rc = sqlite3_exec(db, sql, callback, &result[0], &zErrMsg);
+fprintf(fp, "MAX -- VOC: %s\n", result[0]);
+
+// Mínimo
+sql = "SELECT MIN(Valor) FROM Sensor WHERE id = 104;";
+rc = sqlite3_exec(db, sql, callback, &result[1], &zErrMsg);
+fprintf(fp, "MIN -- VOC: %s\n", result[1]);
+
+// Promedio
+sql = "SELECT AVG(Valor) FROM Sensor WHERE id = 104;";
+rc = sqlite3_exec(db, sql, callback, &avgResult, &zErrMsg);
+fprintf(fp, "AVG -- VOC: %s\n", avgResult);
+
+
+
+  fprintf(fp, "\nResumen de CO2 (ID = 105):\n");
+
+// Máximo
+sql = "SELECT MAX(Valor) FROM Sensor WHERE id = 105;";
+rc = sqlite3_exec(db, sql, callback, &result[0], &zErrMsg);
+fprintf(fp, "MAX -- CO2: %s\n", result[0]);
+
+// Mínimo
+sql = "SELECT MIN(Valor) FROM Sensor WHERE id = 105;";
+rc = sqlite3_exec(db, sql, callback, &result[1], &zErrMsg);
+fprintf(fp, "MIN -- CO2: %s\n", result[1]);
+
+// Promedio
+sql = "SELECT AVG(Valor) FROM Sensor WHERE id = 105;";
+rc = sqlite3_exec(db, sql, callback, &avgResult, &zErrMsg);
+fprintf(fp, "AVG -- CO2: %s\n", avgResult);
 
     /* Manejo de errores */
     if (rc != SQLITE_OK)

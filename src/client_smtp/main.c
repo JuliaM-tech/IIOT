@@ -42,7 +42,7 @@ void main(int argc, char *argv[])
     char Emisor[MAX_LENGTH];
     char Destinatario[MAX_LENGTH];
     char Temita[MAX_LENGTH];
-    char cuerpo[MAX_LENGTH];
+    char cuerpo[5000];
     char filename[256];
     int long_index = 0;
 
